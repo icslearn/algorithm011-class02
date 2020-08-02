@@ -43,41 +43,147 @@ leetcode 很早之前就接触过了，但平时很少在上面刷题，没有�
 
 * javascript 实现：
 ```js
-class Node() {
-    constructor(element) {
-        this.element = element; // 当前节点的元素
-        this.next = null; // 下一个节点链接
+class Node {
+    constructor(data) {
+        this.data = data;
+        this.next = null;
     }
 }
-class LinkList {
-    head = new Node('head'); // 头节点
+
+// 单链表
+class SingleList {
+    constructor() {
+        this.size = 0;  // 单链表的长度
+        this.head = new Node('head');  // 表头节点
+        this.currNode = '';  // 当前节点的指向
+    }
+
+    // 判断单链表是否为空
+    isEmpty() {
+        return this.size === 0;
+    }
+
+    // 获取单链表的最后一个节点
+    findLast() {
+        let currNode = this.head;
+
+        while (currNode.next) {
+            currNode = currNode.next;
+        }
+
+        return currNode;
+    }
+
+    // 单链表的遍历显示
+    display() {
+        let result = '';
+        let currNode = this.head;
+
+        while (currNode) {
+            result += currNode.data;
+            currNode = currNode.next;
+            if(currNode) {
+                result += '->';
+            }
+        }
+        console.log(result);
+    }
+
+    // 从当前位置向前移动 n 个节点。
+    advance(n, currNode = this.head) {
+        this.currNode = currNode;
+
+        while ((n--) && this.currNode.next) {
+            this.currNode = this.currNode.next;
+        }
+
+        return this.currNode;
+    }
+
+    // 在单链表中寻找item元素
     find(item) {
-        var currNode = this.head;
-        while (currNode.element != item) {
+        let currNode = this.head;
+
+        while (currNode && (currNode.data !== item)) {
             currNode = currNode.next;
         }
+
         return currNode;
     }
-    insert(newElement, item) {
-        var newNode = new Node(newElement);
-        var currNode = this.find(item);
-        newNode.next = currNode.next;
-        currNode.next = newNode;
+
+    // 显示当前节点
+    show() {
+        console.log(this.currNode.data);
     }
+
+    // 获取单链表的长度
+    getLength() {
+        return this.size;
+    }
+
+    // 向单链表中插入元素
+    insert(item, element) {
+        let itemNode = this.find(item);
+
+        if(!itemNode) {  // 如果item元素不存在
+            return;
+        }
+
+        let newNode = new Node(element);
+
+        newNode.next = itemNode.next; // 若currNode为最后一个节点，则currNode.next为空
+        itemNode.next = newNode;
+       
+        this.size++;
+    }
+
+    // 在单链表中删除一个节点
     remove(item) {
-        var prevNode = this._findPrev(item);
-        if (!(prevNode.next == null)) {
-            prevNode.next = prevNode.next.next;
+        if(!this.find(item)) {  // item元素在单链表中不存在时
+            return;
         }
-    }
-    _findPrev(item) {
-        var currNode = this.head;
-        while (!(currNode.next == null) && (currNode.next.element != item)) {
+
+        // 企图删除头结点
+        if (item === 'head') {
+            if (!(this.isEmpty())) {
+                return;
+            } else {
+                this.head.next = null;
+                return;
+            }
+        }
+
+        let currNode = this.head;
+
+        while (currNode.next.data !== item) {
+            // 企图删除不存在的节点
+            if (!currNode.next) {
+                return;
+            }
             currNode = currNode.next;
         }
-        return currNode;
+
+
+        currNode.next = currNode.next.next;
+        this.size--;
+    }
+
+    // 在单链表的尾部添加元素
+    append(element) {
+        let currNode = this.findLast();
+        let newNode = new Node(element);
+
+        currNode.next = newNode;
+        this.size++;
+    }
+
+    // 清空单链表
+    clear() {
+        this.head.next = null;
+        this.size = 0;
     }
 }
+
 ```
 
 3. 跳表（只能用于元素有序的情况，对标的是平衡树和二分查找）
@@ -117,7 +223,7 @@ class Queue {
         this._queue.shift();
     }
     queueFront() {
-        return queue[0];
+        return this._queue[0];
     }
     isEmpty() {
         if (this._queue.length == 0) {
@@ -130,7 +236,7 @@ class Queue {
         return this._queue.length;
     }
     emptyQueue() {
-        queue = [];
+        this._queue = [];
     }
 }
 
